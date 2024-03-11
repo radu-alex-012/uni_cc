@@ -1,0 +1,67 @@
+#GET localhost:3000/wot/wiki/nations/3
+
+#GET localhost:3000/wot/wiki/nations/france
+
+#POST localhost:3000/wot/wiki/tanks
+#Content-Type: 'application/json'
+#
+#{
+#  "nationAlias": "france",
+#  "alias": "b-c-25t",
+#  "fullName": "Batignolles-Chatillon Char 25T",
+#  "tier": "X",
+#  "class": "MT"
+#}
+
+#POST localhost:3000/wot/wiki/nations
+#Content-Type: 'application/json'
+#
+#{
+#"alias": "china",
+#"fullName": "People's Republic of China"
+#}
+
+#POST localhost:3000/wot/wiki/tanks/2
+#Content-Type: 'application/json'
+#
+#{
+#  "nationAlias": "france",
+#  "alias": "b-c-25t",
+#  "fullName": "Batignolles-Chatillon Char 25T",
+#  "tier": "X",
+#  "class": "MT"
+#}
+
+#PUT localhost:3000/wot/wiki/nations
+#Content-Type: 'application/json'
+#
+#{
+#"alias": "china",
+#"fullName": "People's Republic of China"
+#}
+
+#PUT localhost:3000/wot/wiki/tanks/5
+#Content-Type: 'application/json'
+#
+#{
+#  "nationAlias": "france",
+#  "alias": "b-c-25t",
+#  "fullName": "Batignolles-Chatillon Char 25T",
+#  "tier": "X",
+#  "class": "MT"
+#}
+
+#PUT localhost:3000/wot/wiki/tanks
+#Content-Type: 'application/json'
+#
+#{
+#  "nationAlias": "france",
+#  "alias": "b-c-25t",
+#  "fullName": "Batignolles-Chatillon Char 25T",
+#  "tier": "X",
+#  "class": "MT"
+#}
+
+DELETE localhost:3000/wot/wiki/tanks/6
+
+#DELETE localhost:3000/wot/wiki/tanks

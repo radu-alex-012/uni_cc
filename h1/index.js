@@ -297,6 +297,9 @@ const server = http.createServer(async (req, res) => {
         req.on('data', (chunk) => {
             data += chunk;
         });
+        req.on('error', (error) => {
+            console.error('An error occurred:', error);
+        });
         if (req.method === 'GET') {
             if (pathname.endsWith('nations')) {
                 try {
@@ -568,7 +571,6 @@ const server = http.createServer(async (req, res) => {
                         const errorMessage = validateJSON(json, 'tank', db);
                         if (errorMessage === '') {
                             try {
-                                console.log(json.nationAlias === 'ussr');
                                 const [result] = await db.query(`INSERT INTO tanks (nation_id, alias, name, tier, class) VALUE ((SELECT id FROM nations WHERE alias = ?), ?, ?, ?, ?)`, [json.nationAlias, json.alias, json.fullName, json.tier, json.class]);
                                 const newLocation = 'http://localhost:3000/wot/wiki/tanks/' + result.insertId;
                                 res.writeHead(201, {
@@ -613,7 +615,12 @@ const server = http.createServer(async (req, res) => {
                             const errorMessage = validateFirepowerJSON(json);
                             if (errorMessage === '') {
                                 try {
-                                    const [result] = await db.query(`INSERT INTO firepower VALUES (NULL, (SELECT id FROM tanks WHERE alias = ?), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [json.shell1.type, json.shell2.type, json.shell3.type, json.shell1.damage, json.shell2.damage, json.shell3.damage, json.shell1.penetration, json.shell2.penetration, json.shell3.penetration, json.shell1.velocity, json.shell2.velocity, json.shell3.velocity, undefined, undefined, json.reloadTime, undefined, undefined, undefined, json.aimTime, json.dispersion, json.ammoCapacity]);
+                                    const [result] = await db.query(`INSERT INTO firepower
+                                                                     VALUES (NULL,
+                                                                             (SELECT id FROM tanks WHERE alias = ?), ?,
+                                                                             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                                                                             ?, ?, ?, ?, ?,
+                                                                             ?)`, [json.shell1.type, json.shell2.type, json.shell3.type, json.shell1.damage, json.shell2.damage, json.shell3.damage, json.shell1.penetration, json.shell2.penetration, json.shell3.penetration, json.shell1.velocity, json.shell2.velocity, json.shell3.velocity, undefined, undefined, json.reloadTime, undefined, undefined, undefined, json.aimTime, json.dispersion, json.ammoCapacity]);
                                     const newLocation = 'http://localhost:3000/wot/wiki/tanks/' + pathChunks[3] + '/firepower/' + result.insertId;
                                     res.writeHead(201, {
                                         'Content-Type': 'application/json',
@@ -667,7 +674,7 @@ const server = http.createServer(async (req, res) => {
                     "error": "Method Not Allowed",
                     "reason": "PUT method is not supported for the entire collection. Use individual resource endpoints for updates"
                 }));
-            } else if (pathChunks[2] === 'tanks' && isId(pathChunks[3] && await tankExists(db, true, pathChunks[3]))) {
+            } else if (pathChunks[2] === 'tanks' && isId(pathChunks[3]) && await tankExists(db, true, pathChunks[3])) {
                 req.on('end', async () => {
                     try {
                         const json = JSON.parse(data);
@@ -704,7 +711,7 @@ const server = http.createServer(async (req, res) => {
                         }));
                     }
                 });
-            } else if (pathChunks[2] === 'nations' && isId(pathChunks[3] && await nationExists(db, true, pathChunks[3]))) {
+            } else if (pathChunks[2] === 'nations' && isId(pathChunks[3]) && await nationExists(db, true, pathChunks[3])) {
                 req.on('end', async () => {
                     try {
                         const json = JSON.parse(data);
@@ -770,8 +777,8 @@ const server = http.createServer(async (req, res) => {
                 req.on('end', async () => {
                     try {
                         const results = await db.query(`DELETE
-                                        FROM nations
-                                        WHERE id = ?`, [pathChunks[3]]);
+                                                        FROM nations
+                                                        WHERE id = ?`, [pathChunks[3]]);
                         res.writeHead(204);
                         res.end();
                     } catch (error) {
