@@ -8,6 +8,7 @@ const {
     getSpottingStats
 } = require('./get-stats.js');
 const url = require('url');
+const PORT = 3001;
 
 async function tankExists(db, isId, identifier) {
     const sql = `SELECT 1
@@ -290,7 +291,7 @@ const server = http.createServer(async (req, res) => {
     const parsedUrl = url.parse(req.url, true);
     const pathWithoutLeadingSlash = parsedUrl.pathname.slice(1);
     const pathChunks = pathWithoutLeadingSlash.split('/');
-    const db = createDatabaseConnection('wot_wiki');
+    const db =  createDatabaseConnection('wot_wiki');
 
     if (pathname.startsWith('/wot/wiki/')) {
         let data = '';
@@ -801,6 +802,6 @@ const server = http.createServer(async (req, res) => {
     }
 });
 
-server.listen(3000, () => {
-    console.log('Server runs at port 3000')
+server.listen(PORT, () => {
+    console.log(`Tankopedia API server runs at port ${PORT}`)
 });

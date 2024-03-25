@@ -2,6 +2,23 @@ DROP SCHEMA IF EXISTS wot_wiki;
 CREATE SCHEMA wot_wiki;
 USE wot_wiki;
 
+CREATE TABLE wgapi (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    access_token VARCHAR(64) NOT NULL,
+    expires_at BIGINT NOT NULL
+);
+
+CREATE TABLE users (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    email VARCHAR(320) NOT NULL,	
+    password CHAR(64) NOT NULL,
+    rights SET('r', 'w', 'c') NOT NULL,
+    ban_type SET('r', 'w', 'c') DEFAULT NULL,
+    ban_date TIMESTAMP DEFAULT NULL,
+    ban_reason TEXT DEFAULT NULL
+);
+
 CREATE TABLE nations (
     id INT PRIMARY KEY AUTO_INCREMENT,
     alias VARCHAR(20) NOT NULL,
@@ -10,6 +27,7 @@ CREATE TABLE nations (
 
 CREATE TABLE tanks (
     id INT PRIMARY KEY AUTO_INCREMENT,
+    tank_id INT NOT NULL,
     nation_id INT NOT NULL,
     alias VARCHAR(20) NOT NULL,
     name VARCHAR(255) NOT NULL,
@@ -19,6 +37,26 @@ CREATE TABLE tanks (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (nation_id)
         REFERENCES nations (id)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE comments (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    parent_comment_id INT DEFAULT -1,
+    is_deleted BOOL DEFAULT FALSE,
+    user_id INT,
+    tank_id INT NOT NULL,
+    content MEDIUMTEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id)
+		REFERENCES users (id)
+        ON DELETE SET NULL,
+	FOREIGN KEY (parent_comment_id)
+		REFERENCES comments (id)
+        ON DELETE SET NULL,
+	FOREIGN KEY (tank_id)
+		REFERENCES tanks (id)
         ON DELETE CASCADE
 );
 
@@ -98,6 +136,9 @@ CREATE TABLE spotting (
         ON DELETE CASCADE
 );
 
+INSERT INTO wgapi (access_token, expires_at) VALUES
+    ('77d8b62ca62cd02efd13d8965e279e7fac5d5700', '1712499596');
+
 INSERT INTO nations (alias, name) VALUES
 	('ussr', 'Union of Soviet Socialist Republics'),
     ('usa', 'United States of America'),
@@ -105,27 +146,27 @@ INSERT INTO nations (alias, name) VALUES
     ('france', 'France'),
     ('germany', 'Germany');
 
-INSERT INTO tanks (nation_id, alias, name, tier, class) VALUES
-	((SELECT id FROM nations WHERE alias = 'ussr'), 'is-7', 'IS-7', 'X', 'HT'),
-	((SELECT id FROM nations WHERE alias = 'usa'), 'm103', 'M103', 'IX', 'HT'),
-	((SELECT id FROM nations WHERE alias = 'uk'), 'cent-1', 'Centurion Mk. I', 'VIII', 'MT'),
-	((SELECT id FROM nations WHERE alias = 'france'), 'arl-44', 'ARL 44', 'VI', 'HT'),
-	((SELECT id FROM nations WHERE alias = 'germany'), 'jagdtiger', 'Jagdtiger', 'IX', 'TD'),
-	((SELECT id FROM nations WHERE alias = 'ussr'), '212a', '212A', 'IX', 'SPG'),
-	((SELECT id FROM nations WHERE alias = 'usa'), 'm4043', 'M40/M43', 'VIII', 'SPG'),
-	((SELECT id FROM nations WHERE alias = 'usa'), 't26e4', 'T26E4 SuperPershing', 'VIII', 'MT'),
-	((SELECT id FROM nations WHERE alias = 'uk'), 'charioteer', 'Charioteer', 'VIII', 'TD'),
-	((SELECT id FROM nations WHERE alias = 'france'), 'amx-13-75', 'AMX 13 75', 'VII', 'LT'),
-	((SELECT id FROM nations WHERE alias = 'germany'), 'tiger-2', 'Tiger II', 'VIII', 'HT'),
-	((SELECT id FROM nations WHERE alias = 'ussr'), 'su-152', 'SU-152', 'VII', 'TD'),
-	((SELECT id FROM nations WHERE alias = 'usa'), 'chaffee', 'M24 Chaffee', 'V', 'LT'),
-	((SELECT id FROM nations WHERE alias = 'uk'), 'cromwell', 'Cromwell', 'VI', 'MT'),
-	((SELECT id FROM nations WHERE alias = 'france'), 'amx-40', 'AMX 40', 'IV', 'LT'),
-	((SELECT id FROM nations WHERE alias = 'germany'), 'stug-3-g', 'StuG III Ausf. G', 'V', 'TD'),
-	((SELECT id FROM nations WHERE alias = 'ussr'), 'kv-2', 'KV-2', 'VI', 'HT'),
-	((SELECT id FROM nations WHERE alias = 'uk'), 'fv4005', 'FV4005 Stage II', 'X', 'TD'),
-	((SELECT id FROM nations WHERE alias = 'france'), 'amx-30-b', 'AMX 30 B', 'X', 'MT'),
-	((SELECT id FROM nations WHERE alias = 'germany'), 'luchs', 'Pz.Kpfw. II Luchs', 'IV', 'LT');
+INSERT INTO tanks (tank_id, nation_id, alias, name, tier, class) VALUES
+	(7169, (SELECT id FROM nations WHERE alias = 'ussr'), 'is-7', 'IS-7', 'X', 'HT'),
+	(9505, (SELECT id FROM nations WHERE alias = 'usa'), 'm103', 'M103', 'IX', 'HT'),
+	(5969, (SELECT id FROM nations WHERE alias = 'uk'), 'cent-1', 'Centurion Mk. I', 'VIII', 'MT'),
+	(2625, (SELECT id FROM nations WHERE alias = 'france'), 'arl-44', 'ARL 44', 'VI', 'HT'),
+	(7953, (SELECT id FROM nations WHERE alias = 'germany'), 'jagdtiger', 'Jagdtiger', 'IX', 'TD'),
+	(8449, (SELECT id FROM nations WHERE alias = 'ussr'), '212a', '212A', 'IX', 'SPG'),
+	(7457, (SELECT id FROM nations WHERE alias = 'usa'), 'm4043', 'M40/M43', 'VIII', 'SPG'),
+	(13345, (SELECT id FROM nations WHERE alias = 'usa'), 't26e4', 'T26E4 SuperPershing', 'VIII', 'MT'),
+	(14673, (SELECT id FROM nations WHERE alias = 'uk'), 'charioteer', 'Charioteer', 'VIII', 'TD'),
+	(5185, (SELECT id FROM nations WHERE alias = 'france'), 'amx-13-75', 'AMX 13 75', 'VII', 'LT'),
+	(5137, (SELECT id FROM nations WHERE alias = 'germany'), 'tiger-2', 'Tiger II', 'VIII', 'HT'),
+	(2305, (SELECT id FROM nations WHERE alias = 'ussr'), 'su-152', 'SU-152', 'VII', 'TD'),
+	(9761, (SELECT id FROM nations WHERE alias = 'usa'), 'chaffee', 'M24 Chaffee', 'V', 'LT'),
+	(1105, (SELECT id FROM nations WHERE alias = 'uk'), 'cromwell', 'Cromwell', 'VI', 'MT'),
+	(2881, (SELECT id FROM nations WHERE alias = 'france'), 'amx-40', 'AMX 40', 'IV', 'LT'),
+	(1041, (SELECT id FROM nations WHERE alias = 'germany'), 'stug-3-g', 'StuG III Ausf. G', 'V', 'TD'),
+	(10497, (SELECT id FROM nations WHERE alias = 'ussr'), 'kv-2', 'KV-2', 'VI', 'HT'),
+	(13905, (SELECT id FROM nations WHERE alias = 'uk'), 'fv4005', 'FV4005 Stage II', 'X', 'TD'),
+	(15425, (SELECT id FROM nations WHERE alias = 'france'), 'amx-30-b', 'AMX 30 B', 'X', 'MT'),
+	(6161, (SELECT id FROM nations WHERE alias = 'germany'), 'luchs', 'Pz.Kpfw. II Luchs', 'IV', 'LT');
 
 INSERT INTO firepower VALUES
 	(NULL, (SELECT id FROM tanks WHERE name = 'AMX 40'), 'AP', 'HEAT', 'HE', 110, 110, 175, 74, 92, 38, 600, 480, 600, NULL, NULL, 5.94, NULL, NULL, NULL, 2.4, 0.44, 105),

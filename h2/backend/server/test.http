@@ -1,0 +1,26 @@
+POST http://localhost:3000/register
+Content-Type: application/json
+
+{
+  "username": "Tankie_comrade",
+  "email": "test@123.com",
+  "password": "randomness"
+}
+###
+GET http://localhost:3000/tanks
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTcxMTMyNTk1NywiZXhwIjoxNzExMzI5NTU3fQ.7Zm9-4E4VQSGOacSLnbdfQLeSPcrcTR1Bb33CFyU2ow
+###
+GET http://localhost:3000/tanks/fv4005
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTcxMTMyNTk1NywiZXhwIjoxNzExMzI5NTU3fQ.7Zm9-4E4VQSGOacSLnbdfQLeSPcrcTR1Bb33CFyU2ow
+###
+GET http://localhost:3000/tanks/fv4005/stats
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTcxMTMyNTk1NywiZXhwIjoxNzExMzI5NTU3fQ.7Zm9-4E4VQSGOacSLnbdfQLeSPcrcTR1Bb33CFyU2ow
+###
+GET http://localhost:3000/tanks/t26e4/stats
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTcxMTMyNTk1NywiZXhwIjoxNzExMzI5NTU3fQ.7Zm9-4E4VQSGOacSLnbdfQLeSPcrcTR1Bb33CFyU2ow
+###
+GET http://localhost:3000/users/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTcxMTMyNTk1NywiZXhwIjoxNzExMzI5NTU3fQ.7Zm9-4E4VQSGOacSLnbdfQLeSPcrcTR1Bb33CFyU2ow
+###
+GET http://localhost:3000/tanks/t26e4/comments
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTcxMTMyNTk1NywiZXhwIjoxNzExMzI5NTU3fQ.7Zm9-4E4VQSGOacSLnbdfQLeSPcrcTR1Bb33CFyU2ow
